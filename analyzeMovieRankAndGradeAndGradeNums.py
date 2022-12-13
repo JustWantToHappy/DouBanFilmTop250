@@ -1,24 +1,27 @@
-from pyecharts.charts import Scatter
-from pyecharts import options as opts
+# 导入常用库
+import warnings
 import pandas as pd
-#豆瓣top250电影排名&评分&评分人数情况
-if __name__=="__main__":
-    df = pd.read_excel("DouBanListPage.xlsx", sheet_name=0)
-    dic = df.to_dict()
-    rank=list(dic["rank"].values())
-    grade=sorted(list(dic["grade"].values()))
-    title="豆瓣评分top250电影排名&评分&评分人数情况"
-    print(grade)#x轴
-    print(rank)#y轴
-    print(len(rank)==len(grade))
-    scatter=(
-        Scatter(init_opts=opts.InitOpts(page_title=title,width="1200px", height="500px"))
-        #自变量x
-        .add_xaxis(xaxis_data=grade)
-        #因变量y
-        .add_yaxis("", y_axis=rank)
-        #坐标轴配置项
-        .set_global_opts(xaxis_opts=opts.AxisOpts(name="评分人数",max_=2500000,min_=0,interval=500000),yaxis_opts=opts.AxisOpts(name="豆瓣排名",name_gap="40",min_=0,max_=250))
-        .set_global_opts(visualmap_opts=opts.VisualMapOpts(is_show=True,pos_right="0",pos_bottom="center",precision="1",min_=8,max_=10,range_text=['高分','低分'],split_number=100,range_color=['#ffffff','blue']))
-    )
-    scatter.render("rank.html")
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 图表可以显示中文
+warnings.filterwarnings('ignore')
+
+df = pd.read_excel("DouBanListPage.xlsx", sheet_name=0)
+x=list(df["rank"].to_list())#电影排名
+y=list(df["grade"].to_list())#电影评分人数
+z=list(df["rating_num"].to_list())#电影评分
+plt.figure(figsize=(12, 8))
+plt.scatter(x=y,
+            y=x,
+            cmap='Blues',
+            marker='o',
+            c=z,   # 数字越大，颜色越深，评分越高
+            alpha=0.8,
+            linewidths=0.3,
+            edgecolors='Black')
+
+plt.title('豆瓣top250电影排名&评分&评分人数情况', fontsize=18)
+plt.xlabel('评分人数', fontsize=14)
+plt.ylabel('豆瓣排名', fontsize=14)
+plt.xlim(0, 2500000)
+plt.colorbar()
+plt.show()
